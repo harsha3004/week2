@@ -1,0 +1,153 @@
+#include<Servo.h>//including servo function
+Servo servo_1;//defining servo_1 class
+Servo servo_2;//defining servo_2 class
+int led_r=A5;//red led at windows 1
+int led_b=A4;//blue led at windows 1
+int led_g=A3;//green led at windows 1
+int led_y=A2;//yellow led at windows 1
+int pin1=2;//red led at windows 3
+int pin2=3;//blue led at windows 3
+int pin3=4;//green led at windows 3
+int pin4=5;//yellow led at windows 3
+int ir_1Pin=6;//ir sensor1 out pin
+int ir_2Pin=7;//ir sensor2 out pin
+int ir_3Pin=8;//ir sensor3 out pin
+int ir_4Pin=9;//ir sensor4 out pin
+int us_1Pin=10;// us sensor1 signal pin
+int us_2Pin=12;// us sensor2 signal pin
+int servo_1Pin=11;//servo motor1 signal pin 
+int servo_2Pin=13;//servo motor2 signal pin
+int pos1=0;//used for servo_1
+int pos2=0;//for servo_2
+int pin_1=HIGH;//for taking ir_1 input
+int pin_2=HIGH;//for taking ir_2 input
+int pin_3=HIGH;//for taking ir_3 input
+int pin_4=HIGH;//for taking ir_4 input
+int distance1=0;//distance calculated by us_1
+int distance2=0;//distance calculated by us_2
+// functions below are used to calculate distance using ultra sonic sensors 
+long us_1distance(int triggerpin1,int echopin1)//a function to calculate distance
+{
+  pinMode(triggerpin1,OUTPUT); // Clear the trigger
+  digitalWrite(triggerpin1,LOW);
+  delayMicroseconds(2);
+  digitalWrite(triggerpin1,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerpin1,LOW);
+  pinMode(echopin1,INPUT);
+  // Reads the echo pin, and returns the sound wave travel time in microseconds
+  return pulseIn(echopin1,HIGH);  
+}
+long us_2distance(int triggerpin2,int echopin2)//a function to calculate distance
+{
+  pinMode(triggerpin2,OUTPUT); // Clear the trigger
+  digitalWrite(triggerpin2,LOW);
+  delayMicroseconds(2);
+  digitalWrite(triggerpin2,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerpin2,LOW);
+  pinMode(echopin2,INPUT);
+  // Reads the echo pin, and returns the sound wave travel time in microseconds
+  return pulseIn(echopin2,HIGH);  
+}
+void setup(){
+  servo_1.attach(servo_1Pin);
+  servo_2.attach(servo_2Pin);
+  pinMode(led_r,OUTPUT);
+  pinMode(led_b,OUTPUT);
+  pinMode(led_g,OUTPUT);
+  pinMode(led_y,OUTPUT);
+  pinMode(pin1,OUTPUT);
+  pinMode(pin2,OUTPUT);
+  pinMode(pin3,OUTPUT);
+  pinMode(pin4,OUTPUT);
+  pinMode(ir_1Pin,INPUT);
+  pinMode(ir_2Pin,INPUT);
+  pinMode(ir_3Pin,INPUT);
+  pinMode(ir_4Pin,INPUT);
+}
+void loop(){
+  distance1=0.01723*us_1distance(us_1Pin,us_1Pin);//distance in cm
+  distance2=0.01723*us_2distance(us_2Pin,us_2Pin);
+  if(distance1<30)
+  {
+    for(pos1=0;pos1<=90;pos1+=1){
+      servo_1.write(pos1);
+      delay(1);
+    }
+    delay(500);
+    for(pos1=90;pos1>=0;pos1-=1){
+      servo_1.write(pos1);
+      delay(1);
+    }
+  }
+  if(distance2<30){
+    //turning off all leds once vehicle is out
+    digitalWrite(pin1,LOW);
+    digitalWrite(led_r,LOW);
+    digitalWrite(pin2,LOW);
+    digitalWrite(led_b,LOW);
+    digitalWrite(pin3,LOW);
+    digitalWrite(led_g,LOW);
+    digitalWrite(pin4,LOW);
+    digitalWrite(led_y,LOW);
+  	for(pos2=0;pos2<=90;pos2+=1){
+    	servo_2.write(pos2);
+    	delay(1);
+    }
+    delay(500);
+    for(pos2=90;pos2>=0;pos2-=1){
+      servo_2.write(pos2);
+      delay(1);
+    }
+  }
+  //taking IRs
+  pin_1=digitalRead(ir_1Pin);
+  pin_2=digitalRead(ir_2Pin);
+  pin_3=digitalRead(ir_3Pin);
+  pin_4=digitalRead(ir_4Pin);
+  if(pin_1==HIGH){
+    digitalWrite(led_r,HIGH);
+    digitalWrite(led_b,LOW);
+    digitalWrite(led_g,LOW);
+    digitalWrite(led_y,LOW);
+    delay(2000);//keeping some delay so that vehicle reaches to third window
+    digitalWrite(pin1,HIGH);
+    digitalWrite(pin2,LOW);
+    digitalWrite(pin3,LOW);
+    digitalWrite(pin4,LOW);
+  }
+  else if(pin_2==HIGH){
+    digitalWrite(led_r,LOW);
+    digitalWrite(led_b,HIGH);
+    digitalWrite(led_g,LOW);
+    digitalWrite(led_y,LOW);
+    delay(2000);//keeping some delay so that vehicle reaches to third window
+    digitalWrite(pin1,LOW);
+    digitalWrite(pin2,HIGH);
+    digitalWrite(pin3,LOW);
+    digitalWrite(pin4,LOW);
+  }
+  else if(pin_3==HIGH){
+    digitalWrite(led_r,LOW);
+    digitalWrite(led_b,LOW);
+    digitalWrite(led_g,HIGH);
+    digitalWrite(led_y,LOW);
+    delay(2000);//keeping some delay so that vehicle reaches to third window
+    digitalWrite(pin1,LOW);
+    digitalWrite(pin2,LOW);
+    digitalWrite(pin3,HIGH);
+    digitalWrite(pin4,LOW);
+  }
+  if(pin_4==HIGH){
+    digitalWrite(led_r,LOW);
+    digitalWrite(led_b,LOW);
+    digitalWrite(led_g,LOW);
+    digitalWrite(led_y,HIGH);
+    delay(2000);//keeping some delay so that vehicle reaches to third window
+    digitalWrite(pin1,LOW);
+    digitalWrite(pin2,LOW);
+    digitalWrite(pin3,LOW);
+    digitalWrite(pin4,HIGH);
+  }
+}
