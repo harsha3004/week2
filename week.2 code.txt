@@ -139,7 +139,7 @@ void loop(){
     digitalWrite(pin3,HIGH);
     digitalWrite(pin4,LOW);
   }
-  if(pin_4==HIGH){
+  else if(pin_4==HIGH){
     digitalWrite(led_r,LOW);
     digitalWrite(led_b,LOW);
     digitalWrite(led_g,LOW);
